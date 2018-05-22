@@ -1,0 +1,147 @@
+\
+// ------------------------- BBHEADER/GSE ------------------------------\
+\
+MODULE SimulationControl		\
+	maxContainerLength          100000\
+	containerNumber             300\
+	loopsPerPoint				10000000	//90100\
+	loopsPerIntermediateResult	10000000\
+	infoRate					-1\
+	startFromGui				0\
+	\
+	\
+MODULE SkipFinalBurst\
+\
+// -------------------------------------------------------------\
+\
+MODULE DVBS2XStreamConfiguration\
+	transponderID				0\
+	carrier_center_frequency_Hz	0\
+	baud_rate					40000000\
+	roll_off_factor				0.25\
+	superframe					1\
+	frame_length				1 //0=normal, 1=short\
+	pilots						0\
+	power						10\
+	pls							7\
+	modcod						1\
+LABEL							1	\
+\
+STATIC_PIPE						-1	\
+\
+MODULE MobileScenarioConfiguration\
+	vehicleSpeed 				14 //100.283 //railroad:27.77, aeronautical:100.283 //vehicle:14 // [m/s]\
+	yaw  						1\
+	mode						'vechicle'  	//14 [m/s]\
+	//mode 						'aeronautical' 	//100.283 [m/s]\
+	//mode 						'railroad'		//27.77 [m/s]\
+	\
+MODULE PacketGenerator\
+	mode						1\
+	pkt_type					4 //0->fixedLength;1->InternetDistributed_1;2->InternetDistributed_2;3->MPEG; 4=fullBBframe\
+	fixPktLength				4000\
+	pkt_content					1\
+LABEL							2	\
+	\
+MODULE ByteToBit\
+\
+MODULE MapperBitToSymbol\
+\
+MODULE ZeroPadding\
+	oversampling				4\
+\
+MODULE RRCosFilter\
+	symbols_length				20\
+	roll_off_factor				0.25\
+	oversampling				4\
+	mode						2\
+	sampling_error				0.1\
+		\
+\
+//Channel----------------------------------------------------------------\
+MODULE ConverterDoubleToFloat\
+\
+MODULE StateSequenceGenerator  //module sets samples to zero!!!!\
+	enableModule				1\
+	mode 						1 //0-CCDFs; 1-FIXED_BLOCKAGE_RATE; 2-IU__BLOCKAGE; 3-CCDF_TS\
+	currOverallState			0 >> NODAT >> TS 0 1000000 1	 //0 >> NODAT	\
+	shadowingState 				1 >> NODAT >> TS 0 1000000 1\
+	blockage_rate				0 //[%], only needed for mode 1!\
+	blockage_duration			0.1 //[sec], only needed for mode 1!\
+	init_sync_frames  			10\
+	badStateDistribution  		0 >> NODAT >> PDF 0 25 0.1	  \
+	goodStateDistribution 		0 >> NODAT >> PDF 0 25 0.1	\
+	ts_file_name				'KaMobile/stateSequence/rural_meangood18.6_stdevgood20_meanbad6.9_stdevbad8.txt'\
+	manualContainerLength		16200   //-1: do not ise it, >0: use it for calculation of the equivalentRealTime\
+	\
+MODULE TroposphericGenerator\
+	enableModule				1 //0\
+	samplingFrequency			1\
+	startTime					6250   // 4dB fade event\
+	inputFileFame				'KaMobile/propagationChannel/Rain_fade_ROSTOV_1Hz.dat'\
+	repeatFileAfterEnd			1\
+	tropoAttdB					0 		 \
+\
+	\
+// MODULE	AntennaPointingModel\
+	// enableModule				0 //0	\
+\
+MODULE StateSamplesGenerator\
+	enableModule				1\
+\
+MODULE AWGN\
+	snr							10\
+//	snrRamp_low					-5\
+	snrRamp_high				12\
+	snrRamp_stepPerContainer	0.0002   // 0.5dB/s @ 4Mbaud\
+\
+MODULE ConverterFloatToDouble	\
+\
+//Receiver---------------------------------------------------------------\
+MODULE RRCosFilter\
+	symbols_length				20\
+	roll_off_factor				0.25\
+	oversampling				4\
+	mode						2\
+\
+MODULE MapperSymbolToSoftBit\
+\
+\
+MODULE PacketAnalyser\
+	pkt_content					1\
+	outputPerBurst				1 \
+\
+MODULE AcmReceiver\
+	enableModule				1  // 1=DVBS2, 2=RCS2\
+	protocol					1\
+	smoothingFactor				0.9\
+	acmMargin					0.5\
+	\
+MODULE StatisticsReceiver\
+	protocol					1   // 1=DVBS2, 2=RCS2\
+	viewModulo					10000\
+	autoReset					0\
+	\
+\
+\
+\
+\
+\
+\
+\
+	\
+\
+\
+\
+\
+\
+\
+	\
+\
+	\
+	\
+\
+\
+\
+\
+\
