@@ -5,8 +5,6 @@
 #into a new simfile.
 import argparse
 
-
-
 #Header:
 print(
 '''
@@ -16,11 +14,36 @@ print(
 _\ \ | | | | | |/ /   | | |  __/ / /__| (_) | | | \ V /  __/ |  | ||  __/ |
 \__/_|_| |_| |_|\/    |_|_|\___| \____/\___/|_| |_|\_/ \___|_|   \__\___|_|
 ''')
+
+
 #add possibility to give filepath in command window with -f/-file
-parser = argparse.ArgumentParser(description = "convert simFiles with vector modules and global variables")
+parser = argparse.ArgumentParser(
+                                 description = "convert simFiles with vector modules and global variables",
+                                 epilog = """
+                                          Global Variables have to be initialized AFTER simfile Header and BEFORE the first module:
+                                          ///////HEADER
+                                          ////foofoo
+
+                                          $beams 5
+                                          $fix -1
+                                          $precodingBeams 5
+
+                                          MODULE xyz ...
+
+                                          the variables have a dollar prefix which indicates them as global variables
+
+                                          Usage in simfile:
+
+                                          MODULE ScenarioConfiguration
+                                                numBeams					$beams
+	                                            framingType					1
+
+
+
+                                    """)
 parser.add_argument("-file", "-f", metavar='\b', help="indicate full file path")
-parser.add_argument("-hvector", "-hv", metavar='\b', help = "explains vector module syntax")
-parser.add_argument("-gvariable", "-gv", metavar='\b', help = "explains global varible syntax")
+#parser.add_argument("-hvector", "-hv", metavar='\b', help = "explains vector module syntax")
+#parser.add_argument("-gvariable", "-gv", metavar='\b', help = "explains global varible syntax")
 
 # read arguments from the command line
 args = parser.parse_args()
@@ -32,8 +55,8 @@ if args.file:
     #print("file was %s" % args.file)
 else:
     pathOfSimfile = "noFileAvailable" #pathOfSimfile           = "C:/Users/nip/Documents/hannes/hannes.sim"
-if args.hvector:
-    print("help for vector modules")
+#if args.hvector:
+#    print("help for vector modules")
 #enter path of simefile for conversion:
 #pathOfSimfile           = "C:/Users/nip/Documents/hannes/x.sim"
 #pathOfSimfile           = "C:/Users/nip/Documents/hannes/precod01_FullSet.sim"
