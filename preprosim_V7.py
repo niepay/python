@@ -15,19 +15,23 @@ print("_\ \ | | | | | |/ /   | | |  __/ / /__| (_) | | | \ V /  __/ |  | ||  __/
 print("\__/_|_| |_| |_|\/    |_|_|\___| \____/\___/|_| |_|\_/ \___|_|   \__\___|_|   ")
 
 #add possibility to give filepath in command window with -f/-file
-parser = argparse.ArgumentParser()
-parser.add_argument("-file", "-f", help="indicate full file path")
-parser.add_argument("-help","-h", help = "-f/-file followed by full file path\n"+\
-                                         "-hvector/-hv shows how to use vector modules"+\
-                                         "-hgvar/-hg explains how to use global variables")
+parser = argparse.ArgumentParser(description = "convert simFiles with vector modules and global variables")
+parser.add_argument("-file", "-f", metavar='\b', help="\tindicate full file path")
+parser.add_argument("-hvector", "-hv", metavar='\b', help = "\texplains vector module syntax")
+parser.add_argument("-gvariable", "-gv", metavar='\b', help = "\texplains global varible syntax")
+
 # read arguments from the command line
 args = parser.parse_args()
+for arg in vars(args):
+    print(arg, getattr(args, arg))
 # check for -file or -f
 if args.file:
     pathOfSimfile = args.file
     #print("file was %s" % args.file)
 else:
     pathOfSimfile = "noFileAvailable" #pathOfSimfile           = "C:/Users/nip/Documents/hannes/hannes.sim"
+if args.hvector:
+    print("help for vector modules")
 #enter path of simefile for conversion:
 #pathOfSimfile           = "C:/Users/nip/Documents/hannes/x.sim"
 #pathOfSimfile           = "C:/Users/nip/Documents/hannes/precod01_FullSet.sim"
