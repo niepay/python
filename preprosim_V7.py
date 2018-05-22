@@ -8,17 +8,19 @@ import argparse
 
 
 #Header:
-print(" __ _              ___ _ _          ___                          _            ")
-print("/ _(_)_ __ ___    / __(_) | ___    / __\___  _ ____   _____ _ __| |_ ___ _ __ ")
-print("\ \| | '_ ` _ \  / _\ | | |/ _ \  / /  / _ \| '_ \ \ / / _ \ '__| __/ _ \ '__|")
-print("_\ \ | | | | | |/ /   | | |  __/ / /__| (_) | | | \ V /  __/ |  | ||  __/ |   ")
-print("\__/_|_| |_| |_|\/    |_|_|\___| \____/\___/|_| |_|\_/ \___|_|   \__\___|_|   ")
-
+print(
+'''
+ __ _              ___ _ _          ___                          _
+/ _(_)_ __ ___    / __(_) | ___    / __\___  _ ____   _____ _ __| |_ ___ _ __
+\ \| | '_ ` _ \  / _\ | | |/ _ \  / /  / _ \| '_ \ \ / / _ \ '__| __/ _ \ '__|
+_\ \ | | | | | |/ /   | | |  __/ / /__| (_) | | | \ V /  __/ |  | ||  __/ |
+\__/_|_| |_| |_|\/    |_|_|\___| \____/\___/|_| |_|\_/ \___|_|   \__\___|_|
+''')
 #add possibility to give filepath in command window with -f/-file
 parser = argparse.ArgumentParser(description = "convert simFiles with vector modules and global variables")
-parser.add_argument("-file", "-f", metavar='\b', help="\tindicate full file path")
-parser.add_argument("-hvector", "-hv", metavar='\b', help = "\texplains vector module syntax")
-parser.add_argument("-gvariable", "-gv", metavar='\b', help = "\texplains global varible syntax")
+parser.add_argument("-file", "-f", metavar='\b', help="indicate full file path")
+parser.add_argument("-hvector", "-hv", metavar='\b', help = "explains vector module syntax")
+parser.add_argument("-gvariable", "-gv", metavar='\b', help = "explains global varible syntax")
 
 # read arguments from the command line
 args = parser.parse_args()
