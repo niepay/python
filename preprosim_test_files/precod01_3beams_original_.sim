@@ -1,0 +1,449 @@
+///////////////////////////////////////////	  
+//     ____ ___  _   _ _____ ___ ____ _   _ ____      _  _____ ___ ___  _   _ 
+//    / ___/ _ \| \ | |  ___|_ _/ ___| | | |  _ \    / \|_   _|_ _/ _ \| \ | |
+//   | |  | | | |  \| | |_   | | |  _| | | | |_) |  / _ \ | |  | | | | |  \| |
+//   | |__| |_| | |\  |  _|  | | |_| | |_| |  _ <  / ___ \| |  | | |_| | |\  |
+//    \____\___/|_| \_|_|   |___\____|\___/|_| \_\/_/   \_\_| |___\___/|_| \_|
+//                                                                            
+///////////////////////////////////////////	  
+MODULE SimulationControl		
+	maxContainerLength          500000         
+	maxLargeContainerLength     500000       
+    containerNumber             70
+    largeContainerNumber        1
+	loopsPerPoint			    10000000  
+	loopsPerIntermediateResult	15000000
+	infoRate				    -1
+	maxPendingBurstsPerServer	5
+	randomGeneratorSeed			0			// 0: seed derived from serverId, >0: seed is "randomGeneratorSeed" on all servers, -1: seed derived from time, not implemented yet!!!
+    streamingMode				0
+MODULE SkipFinalBurst
+MODULE CountContainers
+	viewModulo					100
+	text						'a:'
+MODULE ScenarioConfiguration
+	numBeams					5 		//1 (on interf), 2 (1 interferer), 7 (1 circle), 19 (2 circles), 37 (3 circles)
+	framingType					1		//0:Use FEC-frames, 1:Use bundles, 2:Use superframes
+MODULE CalculateIdealBeamCenterPositions	
+	interferenceMode			4 //0:none, 1:nearestNeighborOnly, 2:1st circle, 3:1st+2nd circle, 4:1st+2nd+3rd circle	
+	
+MODULE CalculateIdealAntennaGain	  //TODO
+	userID						0 //IF UID  0 gibt es hier noch nicht!
+	userPosition_x				0
+	userPosition_y				0
+	crossOverLevel_dB			3  //dB
+	antennaEfficiency			0.6
+	HPBW_deg					1
+	antennaDiameter				0.6
+	TXfrequency_GHz				20
+	antennaPatternType			0 //0: DVB-S2x model, 1:ITU model
+	
+MODULE CalculateIdealAntennaGain	  //TODO
+	userID						1 //IF UID  0 gibt es hier noch nicht!
+	userPosition_x				0.2//0.5
+	userPosition_y				0.45//0.5
+	crossOverLevel_dB			3  //dB
+	antennaEfficiency			0.6
+	HPBW_deg					1
+	antennaDiameter				0.6
+	TXfrequency_GHz				20
+	antennaPatternType			0 //0: DVB-S2x model, 1:ITU model	
+	
+MODULE CalculateIdealAntennaGain	  //TODO
+	userID						2 //IF UID  0 gibt es hier noch nicht!
+	userPosition_x				0.1//0.5
+	userPosition_y				0.1//0.5
+	crossOverLevel_dB			3  //dB
+	antennaEfficiency			0.6
+	HPBW_deg					1
+	antennaDiameter				0.6
+	TXfrequency_GHz				20
+	antennaPatternType			0 //0: DVB-S2x model, 1:ITU model		
+	
+MODULE SetChannelMatrix	
+	//interference_0_to_1			-12		// in dB
+	//interference_1_to_0			-0.945	// in dB
+	//phaseShift_0				0
+	//phaseShift_1				0
+	constPhaseShift				0
+MODULE CalculatePrecodingMatrix
+	mode 						1 //0:MMSE, 1:ZeroForcing, 2: H_inv
+	
+MODULE PrepareContainerForMultiUser   // round robin assignment of UID's
+	
+MODULE DVB_S2x_CarrierConfig		IF UID 0
+	carrier_center_frequency_Hz	0
+	baud_rate					100000
+    pls							19	//51, "PSK8_3_5", PSK8_3_5, PSK_8, 3, FRAME_SHORT  // 19, "QPSK_1_2", QPSK_1_2, QPSK, 2, FRAME_SHORT
+	roll_off_factor				0.25
+	power						10
+MODULE DVB_S2x_CarrierConfig		IF UID 1
+	carrier_center_frequency_Hz	0
+	baud_rate					100000
+    pls							19	//51, "PSK8_3_5", PSK8_3_5, PSK_8, 3, FRAME_SHORT  // 19, "QPSK_1_2", QPSK_1_2, QPSK, 2, FRAME_SHORT
+	roll_off_factor				0.25
+	power						10
+MODULE DVB_S2x_CarrierConfig		IF UID 2
+	carrier_center_frequency_Hz	0
+	baud_rate					100000
+    pls							19	//51, "PSK8_3_5", PSK8_3_5, PSK_8, 3, FRAME_SHORT  // 19, "QPSK_1_2", QPSK_1_2, QPSK, 2, FRAME_SHORT
+	roll_off_factor				0.25
+	power						10
+MODULE DVB_S2x_CarrierConfig		IF UID 3
+	carrier_center_frequency_Hz	0
+	baud_rate					100000
+    pls							19	//51, "PSK8_3_5", PSK8_3_5, PSK_8, 3, FRAME_SHORT  // 19, "QPSK_1_2", QPSK_1_2, QPSK, 2, FRAME_SHORT
+	roll_off_factor				0.25
+	power						10
+MODULE DVB_S2x_CarrierConfig		IF UID 4
+	carrier_center_frequency_Hz	0
+	baud_rate					100000
+    pls							19	//51, "PSK8_3_5", PSK8_3_5, PSK_8, 3, FRAME_SHORT  // 19, "QPSK_1_2", QPSK_1_2, QPSK, 2, FRAME_SHORT
+	roll_off_factor				0.25
+	power						10
+MODULE MultiplyContainerForFramingType   // interleave it as equal as possible in terms of symbols
+STATIC_PIPE  					-1
+// MODULE CountContainers
+	// viewModulo				1
+	// text						'b:'
+//TEST
+MODULE PacketGenerator	IF UID 0
+	mode						1
+	pkt_type					4 //0->fixedLength;1->InternetDistributed_1;2->InternetDistributed_2;3->MPEG;4->DVBS2 full Frame;5-> DVBRCS full Burst
+	fixPktLength				4000
+	// this is a test
+	pkt_content					1
+//TEst
+	initialSeqNum				0
+//TEEEEEST	
+MODULE PacketGenerator	IF UID 1
+	mode						1
+	pkt_type					4 //0->fixedLength;1->InternetDistributed_1;2->InternetDistributed_2;3->MPEG;4->DVBS2 full Frame;5-> DVBRCS full Burst
+	fixPktLength				4000
+	// this is a test
+	pkt_content					1
+//TEst
+	initialSeqNum				0
+//TEEEEEST	
+MODULE PacketGenerator	IF UID 2
+	mode						1
+	pkt_type					4 //0->fixedLength;1->InternetDistributed_1;2->InternetDistributed_2;3->MPEG;4->DVBS2 full Frame;5-> DVBRCS full Burst
+	fixPktLength				4000
+	// this is a test
+	pkt_content					1
+//TEst
+	initialSeqNum				0
+//TEEEEEST	
+MODULE PacketGenerator	IF UID 3
+	mode						1
+	pkt_type					4 //0->fixedLength;1->InternetDistributed_1;2->InternetDistributed_2;3->MPEG;4->DVBS2 full Frame;5-> DVBRCS full Burst
+	fixPktLength				4000
+	// this is a test
+	pkt_content					1
+//TEst
+	initialSeqNum				0
+//TEEEEEST	
+MODULE PacketGenerator	IF UID 4
+	mode						1
+	pkt_type					4 //0->fixedLength;1->InternetDistributed_1;2->InternetDistributed_2;3->MPEG;4->DVBS2 full Frame;5-> DVBRCS full Burst
+	fixPktLength				4000
+	// this is a test
+	pkt_content					1
+//TEst
+	initialSeqNum				0
+//TEEEEEST	
+MODULE ByteToBit  
+//TEst
+//TEEEEEST	
+MODULE BCHencoder 				
+	skipBCH						0	
+MODULE LDPCencoder
+	mode						0//1	// 0: single frame interface,  1: 32 frames interface
+MODULE MapperBitToSymbol 		
+	outputMode					11
+								   
+// MODULE ShowBurst				
+//######### ORIG Symbols ############	
+MODULE SymbolBasedMeasures	IF UID 0
+	switch						0
+	ScatterPlot_NumPoints		8000		
+//###################################	
+	
+				  
+MODULE SymbolBasedMeasures	IF UID 1
+	switch						0
+	ScatterPlot_NumPoints		8000		
+//###################################	
+	
+				  
+MODULE SymbolBasedMeasures	IF UID 2
+	switch						0
+	ScatterPlot_NumPoints		8000		
+//###################################	
+	
+				  
+MODULE SymbolBasedMeasures	IF UID 3
+	switch						0
+	ScatterPlot_NumPoints		8000		
+//###################################	
+	
+				  
+MODULE SymbolBasedMeasures	IF UID 4
+	switch						0
+	ScatterPlot_NumPoints		8000		
+//###################################	
+	
+				  
+MODULE ApplyPrecodingMatrix   // F
+//###################################	
+//	enableModule				0
+PIPELINED	-1
+MODULE ApplyPhaseShifts	IF UID 0
+phaseShift_deg					0
+// MODULE ShowBurst			
+	// dataLen						1
+	// locationId					1
+	
+MODULE ApplyPhaseShifts	IF UID 1
+phaseShift_deg					0
+// MODULE ShowBurst			
+	// dataLen						1
+	// locationId					1
+	
+MODULE ApplyPhaseShifts	IF UID 2
+phaseShift_deg					0
+// MODULE ShowBurst			
+	// dataLen						1
+	// locationId					1
+	
+MODULE ApplyPhaseShifts	IF UID 3
+phaseShift_deg					0
+// MODULE ShowBurst			
+	// dataLen						1
+	// locationId					1
+	
+MODULE ApplyPhaseShifts	IF UID 4
+phaseShift_deg					0
+// MODULE ShowBurst			
+	// dataLen						1
+	// locationId					1
+	
+MODULE ApplyChannelMatrix    // H
+// MODULE ShowBurst			
+PIPELINED	-1
+// MODULE ShowBurst				
+	// dataLen						1
+	// locationId					2
+//######## AFTER Channel and Precoding ##########	
+MODULE SymbolBasedMeasures	IF UID 0
+	switch						0
+	ScatterPlot_NumPoints		8000		
+//###############################################	
+	
+			
+MODULE SymbolBasedMeasures	IF UID 1
+	switch						0
+	ScatterPlot_NumPoints		8000		
+//###############################################	
+	
+			
+MODULE SymbolBasedMeasures	IF UID 2
+	switch						0
+	ScatterPlot_NumPoints		8000		
+//###############################################	
+	
+			
+MODULE SymbolBasedMeasures	IF UID 3
+	switch						0
+	ScatterPlot_NumPoints		8000		
+//###############################################	
+	
+			
+MODULE SymbolBasedMeasures	IF UID 4
+	switch						0
+	ScatterPlot_NumPoints		8000		
+//###############################################	
+	
+			
+MODULE CalculatePrecodedChannel
+//###############################################	
+	mode						0  //SIR
+	
+// MODULE SymbolBasedMeasures		IF UID 2
+	// switch						0
+	// ScatterPlot_NumPoints		8000	
+	
+// MODULE MeasureSymbolPower		IF UID 0
+// MODULE MeasureSymbolPower		IF UID 1
+// MODULE NormalizeSymbolPower		IF UID 0
+	// m_powerTarget				3.3
+// MODULE NormalizeSymbolPower		IF UID 1
+	// m_powerTarget				2.01
+MODULE DVBS2XBundleDecomposer	IF UID 0
+MODULE DVBS2XBundleDecomposer	IF UID 1
+MODULE DVBS2XBundleDecomposer	IF UID 2
+MODULE DVBS2XBundleDecomposer	IF UID 3
+MODULE DVBS2XBundleDecomposer	IF UID 4
+PIPELINED	-1
+MODULE ZeroPadding 
+	oversampling				4 
+	
+MODULE RRCosFilter      
+	symbols_length				20
+	roll_off_factor				0.25
+//HERE WE GO	
+	oversampling				4
+	sampling_error				0.0 
+	mode						3 // 2=double, 3=float
+	
+MODULE AWGN
+	snr							7.1
+MODULE RRCosFilter			    //NOTE: writes length only to containerBodyLength!!
+	symbols_length				20
+	roll_off_factor				0.25
+	oversampling				4
+	sampling_error				0.0 	//000000000000001 
+	mode						3		// 2=double, 3=float		
+MODULE CalculatePrecodedChannel	
+	mode						1  //SIR + SNIR
+	
+MODULE ConverterFloatToDouble
+	
+MODULE RemoveOversampling
+	oversampling				4
+	tx_symbols_length			20
+	rx_symbols_length			20
+MODULE SymbolBasedMeasures		IF UID 0
+	switch						0
+//HERE WE GO AGAIN	
+	ScatterPlot_NumPoints		8000		
+	
+			
+MODULE SymbolBasedMeasures		IF UID 1
+	switch						0
+//HERE WE GO AGAIN	
+	ScatterPlot_NumPoints		8000		
+	
+			
+MODULE SymbolBasedMeasures		IF UID 2
+	switch						0
+//HERE WE GO AGAIN	
+	ScatterPlot_NumPoints		8000		
+	
+			
+MODULE SymbolBasedMeasures		IF UID 3
+	switch						0
+//HERE WE GO AGAIN	
+	ScatterPlot_NumPoints		8000		
+	
+			
+MODULE SymbolBasedMeasures		IF UID 4
+	switch						0
+//HERE WE GO AGAIN	
+	ScatterPlot_NumPoints		8000		
+	
+			
+MODULE MapperSymbolToSoftBit
+//HERE WE GO AGAIN	
+MODULE LDPCPacketcollector	IF UID 0
+PIPELINED	-1
+MODULE LDPCPacketcollector	IF UID 1
+PIPELINED	-1
+MODULE LDPCPacketcollector	IF UID 2
+PIPELINED	-1
+MODULE LDPCPacketcollector	IF UID 3
+PIPELINED	-1
+MODULE LDPCPacketcollector	IF UID 4
+PIPELINED	-1
+MODULE LDPCPacketdistributor	IF UID 0
+PIPELINED	-1
+MODULE LDPCPacketdistributor	IF UID 1
+PIPELINED	-1
+MODULE LDPCPacketdistributor	IF UID 2
+PIPELINED	-1
+MODULE LDPCPacketdistributor	IF UID 3
+PIPELINED	-1
+MODULE LDPCPacketdistributor	IF UID 4
+PIPELINED	-1
+MODULE BCHdecoder
+	skipBCH 					0
+	
+MODULE BitToByte	
+MODULE PacketAnalyser IF UID 0 //blabkla
+	pkt_content					1
+	pls							22
+	ignoreSynchLoss				1
+	outputStatistics            0     // prints statistics
+	multiUser					0
+	PER_simple					0 >> NODAT
+	PER							0 >> NODAT
+	BER							0 >> NODAT
+	NUM_Packets					0 >> NODAT
+	NUM_Error_Packets			0 >> NODAT
+MODULE PacketAnalyser IF UID 1 //blabkla
+	pkt_content					1
+	ignoreSynchLoss				1
+	outputStatistics            0     // prints statistics
+	multiUser					0
+	PER_simple					0 >> NODAT
+	PER							0 >> NODAT
+	BER							0 >> NODAT
+	NUM_Packets					0 >> NODAT
+	NUM_Error_Packets			0 >> NODAT
+MODULE PacketAnalyser IF UID 2 //blabkla
+	pkt_content					1
+	pls							45
+	ignoreSynchLoss				1
+	outputStatistics            0     // prints statistics
+	multiUser					0
+	PER_simple					0 >> NODAT
+	PER							0 >> NODAT
+	BER							0 >> NODAT
+	NUM_Packets					0 >> NODAT
+	NUM_Error_Packets			0 >> NODAT
+MODULE PacketAnalyser IF UID 3 //blabkla
+	pkt_content					1
+	ignoreSynchLoss				1
+	outputStatistics            0     // prints statistics
+	multiUser					0
+	PER_simple					0 >> NODAT
+	PER							0 >> NODAT
+	BER							0 >> NODAT
+	NUM_Packets					0 >> NODAT
+	NUM_Error_Packets			0 >> NODAT
+MODULE PacketAnalyser IF UID 4 //blabkla
+	pkt_content					1
+	pls							222
+	ignoreSynchLoss				1
+	outputStatistics            0     // prints statistics
+	multiUser					0
+	PER_simple					0 >> NODAT
+	PER							0 >> NODAT
+	BER							0 >> NODAT
+	NUM_Packets					0 >> NODAT
+	NUM_Error_Packets			0 >> NODAT
+PIPELINED	-5
+MODULE StatisticsReceiver
+	viewModulo					100
+	autoReset					1
+MODULE LDPCPacketdistributor	IF UID 0
+PIPELINED	-1
+MODULE LDPCPacketdistributor	IF UID 1
+PIPELINED	-1
+MODULE LDPCPacketdistributor	IF UID 2
+PIPELINED	-1
+MODULE LDPCPacketdistributor	IF UID 3
+PIPELINED	-1
+MODULE LDPCPacketdistributor	IF UID 4
+PIPELINED	-1
+MODULE LDPCPacketdistributor	IF UID 0
+PIPELINED	-1
+MODULE LDPCPacketdistributor	IF UID 1
+PIPELINED	-1
+MODULE LDPCPacketdistributor	IF UID 2
+PIPELINED	-1
+MODULE LDPCPacketdistributor	IF UID 3
+PIPELINED	-1
+MODULE LDPCPacketdistributor	IF UID 4
+PIPELINED	-1
+END	

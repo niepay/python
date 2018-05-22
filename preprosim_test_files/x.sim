@@ -1,0 +1,50 @@
+//-------------------------------------------------------------------
+//Configuration------------------------------------------------------
+//-------------------------------------------------------------------
+
+$osf 4
+$n 2
+$erf 3
+$blub 45
+$qwe 5
+
+MODULE[2] heinz
+	serialNumber				3
+	bandwidth					500 
+	samplingFreq				2500
+	order						2
+	samplingFactor				1	
+PIPELINED 1
+
+MODULE[$qwe] ButterworthFilter  	
+	serialNumber				2
+	bandwidth					500 
+	samplingFreq				$n
+	order						2
+	samplingFactor				1	
+PIPELINED[$qwe]					
+
+MODULE karoline
+	serialNumber				3
+	bandwidth					500 
+	samplingFreq				2500
+	order						2
+	samplingFactor				1
+PIPELINED 7
+MODULE[$n] kurt
+	serialNumber				$osf
+	bandwidth					500 
+	samplingFreq				$qwe
+	order						2
+	samplingFactor				1
+PIPELINED[$qwe]
+//blabla
+MODULE[$erf] Karl-Heinz  			// bbbbbbbb
+	serialNumber				2
+	bandwidth					500 
+	samplingFreq				2500
+	order						2
+	samplingFactor				$blub	
+PIPELINED[3]
+END
+

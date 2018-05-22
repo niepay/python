@@ -1,0 +1,95 @@
+//-------------------------------------------------------------------
+//Configuration------------------------------------------------------
+//-------------------------------------------------------------------
+MODULE heinz	IF UID 0
+	serialNumber				3
+	bandwidth					500 
+	samplingFreq				2500
+	order						2
+	samplingFactor				1	
+MODULE heinz	IF UID 1
+	serialNumber				3
+	bandwidth					500 
+	samplingFreq				2500
+	order						2
+	samplingFactor				1	
+PIPELINED 1
+MODULE ButterworthFilter  		IF UID 0
+	serialNumber				2
+	bandwidth					500 
+	samplingFreq				2
+	order						2
+	samplingFactor				1	
+PIPELINED	5					
+MODULE ButterworthFilter  		IF UID 1
+	serialNumber				2
+	bandwidth					500 
+	samplingFreq				2
+	order						2
+	samplingFactor				1	
+PIPELINED	5					
+MODULE ButterworthFilter  		IF UID 2
+	serialNumber				2
+	bandwidth					500 
+	samplingFreq				2
+	order						2
+	samplingFactor				1	
+PIPELINED	5					
+MODULE ButterworthFilter  		IF UID 3
+	serialNumber				2
+	bandwidth					500 
+	samplingFreq				2
+	order						2
+	samplingFactor				1	
+PIPELINED	5					
+MODULE ButterworthFilter  		IF UID 4
+	serialNumber				2
+	bandwidth					500 
+	samplingFreq				2
+	order						2
+	samplingFactor				1	
+PIPELINED	5					
+MODULE karoline
+	serialNumber				3
+	bandwidth					500 
+	samplingFreq				2500
+	order						2
+	samplingFactor				1
+PIPELINED 7
+MODULE kurt	IF UID 0
+	serialNumber				4
+	bandwidth					500 
+	samplingFreq				5
+	order						2
+	samplingFactor				1
+PIPELINED	5
+MODULE kurt	IF UID 1
+	serialNumber				4
+	bandwidth					500 
+	samplingFreq				5
+	order						2
+	samplingFactor				1
+PIPELINED	5
+//blabla
+MODULE Karl-Heinz  			IF UID 0 // bbbbbbbb
+	serialNumber				2
+	bandwidth					500 
+	samplingFreq				2500
+	order						2
+	samplingFactor				45	
+PIPELINED	3
+MODULE Karl-Heinz  			IF UID 1 // bbbbbbbb
+	serialNumber				2
+	bandwidth					500 
+	samplingFreq				2500
+	order						2
+	samplingFactor				45	
+PIPELINED	3
+MODULE Karl-Heinz  			IF UID 2 // bbbbbbbb
+	serialNumber				2
+	bandwidth					500 
+	samplingFreq				2500
+	order						2
+	samplingFactor				45	
+PIPELINED	3
+END
