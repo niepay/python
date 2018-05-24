@@ -1,0 +1,130 @@
+
+
+
+
+
+
+
+Global Variables have to be initialized AFTER simfile Header and BEFORE the first module:
+	//HEADER
+	//foofoo
+
+	$beams 3
+	$fix -1
+	$precodingBeams 5
+
+	MODULE xyz ...
+
+the variables have a dollar prefix which indicates them as global variables
+
+Usage in simfile:
+	INPUT:
+	MODULE ScenarioConfiguration
+		numBeams		$beams
+		framingType		1
+	OUTPUT:
+	
+	MODULE ScenarioConfiguration
+		numBeams		3
+		framingType		1
+		
+Vector Module Example:
+	INPUT:
+	MODULE[$beams] PacketAnalyser //commentary
+		pkt_content					1
+		pls							1
+		ignoreSynchLoss				1
+		outputStatistics            0     // prints statistics
+		
+	PIPELINED	-5
+	OUTPUT:
+	MODULE PacketAnalyser	IF UID 0 //commentary
+		pkt_content					1
+		pls							1
+		ignoreSynchLoss				1
+		outputStatistics            0     // prints statistics
+	MODULE PacketAnalyser	IF UID 1 //commentary
+		pkt_content					1
+		pls							1
+		ignoreSynchLoss				1
+		outputStatistics            0     // prints statistics
+	MODULE PacketAnalyser	IF UID 2 //commentary
+		pkt_content					1
+		pls							1
+		ignoreSynchLoss				1
+		outputStatistics            0     // prints statistics
+	PIPELINED	-5
+	
+	A Vector Module is initialized by [$variable] or by simply putting a number [5] between the brackets after the Keyword MODULE (no Space in between!)
+	the Vector Module starts at MODULE and ends when reaching a Keyword, or an empty line. 
+	The Vector Module will be duplicated according to the set [number].
+	Keywords are:	"PIPELINED"
+					"TESTPOINT" 
+					"LABEL" 
+					"BRANCH"
+					"STATIC_PIPE" 
+					"NEWSIMU" 
+					"PAR_START"
+					"PAR_END" 
+					"REMOTE_START"
+					"REMOTE_END" 
+					"MODULE "
+					"END"
+					
+Vector Module with PIPELINED doubling with $beams=3:
+	INOUT:
+	MODULE[$beams] LDPCPacketcollector
+	PIPELINED[$beams]	$fix
+	
+	adding [$beams] at the end of PIPELINED adds the Keyword to the vector module in every doubling:
+	OUTPUT:
+	MODULE LDPCPacketcollector	IF UID 0
+	PIPELINED	-1
+	MODULE LDPCPacketcollector	IF UID 1
+	PIPELINED	-1
+	MODULE LDPCPacketcollector	IF UID 2
+	PIPELINED	-1
+	
+	
+Changing Parameters in specific loop cycles:
+
+	When for example using multiple beams you can assign different pls to different beams:
+	INPUT:
+	MODULE[$beams] PacketAnalyser //blabkla
+		pkt_content					1
+		pls							4
+		pls[3]						2
+		pls[2]						45
+		pls[0]						22
+		ignoreSynchLoss				1
+		outputStatistics            0     // prints statistics
+	PIPELINED	-5
+	
+	OUTPUT:
+	MODULE PacketAnalyser IF UID 0 //blabkla
+		pkt_content					1
+		pls							22
+		ignoreSynchLoss				1
+		outputStatistics            0     // prints statistics
+	MODULE PacketAnalyser IF UID 1 //blabkla
+		pkt_content					1
+		pls							4
+		ignoreSynchLoss				1
+		outputStatistics            0     // prints statistics
+	MODULE PacketAnalyser IF UID 2 //blabkla
+		pkt_content					1
+		pls							45
+		ignoreSynchLoss				1
+		outputStatistics            0     // prints statistics
+	MODULE PacketAnalyser IF UID 3 //blabkla
+		pkt_content					1
+		pls							4
+		ignoreSynchLoss				1
+		outputStatistics            0     // prints statistics
+	MODULE PacketAnalyser IF UID 4 //blabkla
+		pkt_content					1
+		pls							2
+		ignoreSynchLoss				1
+		outputStatistics            0     // prints statistics
+	PIPELINED	-5
+	
