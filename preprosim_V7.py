@@ -57,9 +57,9 @@ with open(pathOfSimfile, 'rt') as input_simFile:
     # print(content_simFile)
 
 
-#find number of $ vaiables and their names
-#make a variable for it and get its value
-#extract header:
+# find number of $ vaiables and their names
+# make a variable for it and get its value
+# extract header:
 for line in content_simFile.split("\n"):
     if line.startswith("//"):
         header += "\n" + line
