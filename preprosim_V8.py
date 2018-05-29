@@ -160,7 +160,7 @@ for line in content_simFile.split("\n"):
 
             # generate loop variables
             for loop_line in UID_module.split("\n"):
-
+                # deleting the wrong loop parameters for the UID's
                 if loop_parameter in loop_line:
                     loop_flag = True
                     if loop_line[loop_line.find("[") + 1:loop_line.find("]")] == str(i):
@@ -173,10 +173,11 @@ for line in content_simFile.split("\n"):
                     elif loop_line[loop_line.find("[") + 1:loop_line.find("]")] != str(i) and "[" in loop_line:
                         UID_module = UID_module.replace(loop_line, "")
 
+            # for accepting commented loop parameters:
             for loop_line in UID_module.split("\n"):
                 if loop_line.startswith("\t//"):
                         UID_module = UID_module.replace(loop_line, "\t"+loop_parameter[2:loop_parameter.__len__()]+"\t\t\t\t\t\t\t"+''.join(loop_parameter_value)+"\n")
-                        print(loop_parameter[2:loop_parameter.__len__()]+"\t\t\t\t" + ''.join(loop_parameter_value)+"\n")
+                        #print(loop_parameter[2:loop_parameter.__len__()]+"\t\t\t\t" + ''.join(loop_parameter_value)+"\n")
 
             vector_module += "\n" + UID_module
 
@@ -215,7 +216,7 @@ for line in content_simFile.split("\n"):
     # only f if the last part of simFile is not a vector module:
     if line.startswith("END"):
         content_newSIM += "\n" + content_string
-        # print(content_newSIM)
+        break
 
 # FORMAT OUTPUT STRING:
 # remove unneccessary parts and format string:
