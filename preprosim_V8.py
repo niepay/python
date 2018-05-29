@@ -152,19 +152,16 @@ for line in content_simFile.split("\n"):
             for loop_line in UID_module.split("\n"):
                 if "[" in loop_line and loop_line[loop_line.find("[") + 1:loop_line.find("]")] == str(i):
                     loop_parameter = loop_line[loop_line.find("\t") + 1:loop_line.find("[")]
-                    print(loop_parameter, "########################")
-                if loop_parameter in loop_line: # and "//" not in loop_line: #loop_value = loop_line[loop_line.find(loop_parameter+"\t"):loop_line.isdigit]
-                    # print(loop_line)
-                    #print(loop_line[loop_parameter.__len__()+1], "+++++++++++++++")
+
+                if loop_parameter in loop_line:
                     if loop_line[loop_parameter.__len__()+1] == "\t":
                         loop_parameter_value = str(re.findall("\d+",loop_line))
                         loop_parameter_value = find_between(loop_parameter_value,"'","'")
 
-
             # generate loop variables
             for loop_line in UID_module.split("\n"):
 
-                if loop_parameter in loop_line:# and "//" not in loop_line:
+                if loop_parameter in loop_line:
                     loop_flag = True
                     if loop_line[loop_line.find("[") + 1:loop_line.find("]")] == str(i):
                         UID_module = UID_module.replace(loop_line, loop_line.replace(
@@ -178,11 +175,8 @@ for line in content_simFile.split("\n"):
 
             for loop_line in UID_module.split("\n"):
                 if loop_line.startswith("\t//"):
-                        #UID_module = UID_module.replace(loop_line, loop_line.replace("//", ""))
                         UID_module = UID_module.replace(loop_line, "\t"+loop_parameter[2:loop_parameter.__len__()]+"\t\t\t\t\t\t\t"+''.join(loop_parameter_value)+"\n")
                         print(loop_parameter[2:loop_parameter.__len__()]+"\t\t\t\t" + ''.join(loop_parameter_value)+"\n")
-
-                    #UID_module = UID_module.replace(loop_line,"THIS")
 
             vector_module += "\n" + UID_module
 
@@ -196,22 +190,18 @@ for line in content_simFile.split("\n"):
         # only works because line is not manipulated
         if "PIPELINED" and "[" not in line:
             vector_module += "\n" + line
-       # print(vector_module)
-        # print("====================")
-       # print(loop_flag)
-      #  print(loop_parameter)
+
         #remove double loop parameter in Module:
         if loop_flag:
             for finalize_loop_line in vector_module.splitlines():
                 if "MODULE" in finalize_loop_line:
                     loop_param_flag = False
                 if loop_param_flag and loop_parameter in finalize_loop_line:
-                   # print("#####DELETE#####\n", finalize_loop_line)
+
                     finalize_loop_line = finalize_loop_line.replace(finalize_loop_line, "")
                     loop_flag = False
                 if loop_parameter in finalize_loop_line and not loop_param_flag:
                     loop_param_flag = True
-                   # print("#####inline#####\n", finalize_loop_line)
 
                 finalized_vector_module = finalized_vector_module + "\n" + finalize_loop_line
 
