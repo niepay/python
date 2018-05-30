@@ -148,7 +148,6 @@ for line in content_simFile.split("\n"):
 
             # replace loop parameter in the vector module according to its UID:
             # find loop parameter:
-            #print(UID_module)
             for loop_line in UID_module.split("\n"):
                 if "[" in loop_line and loop_line[loop_line.find("[") + 1:loop_line.find("]")] == str(i):
                     loop_parameter = loop_line[loop_line.find("\t") + 1:loop_line.find("[")]

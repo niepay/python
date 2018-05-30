@@ -1,0 +1,272 @@
+//*********************************************************************
+// SERP - Phase 2
+// Simulation Configuration File
+//*********************************************************************
+
+$precodingBeams 5
+$interferingBeams 5
+
+MODULE SimulationControl		
+	maxContainerLength          500000         
+	maxLargeContainerLength     500000       
+    containerNumber             300
+    largeContainerNumber        10
+	loopsPerPoint			    15000000//100 //10000 //10000000  
+	loopsPerIntermediateResult	15000000
+	infoRate				    -1
+	maxPendingBurstsPerServer	5
+	randomGeneratorSeed			0			// 0: seed derived from serverId, >0: seed is "randomGeneratorSeed" on all servers, -1: seed derived from time, not implemented yet!!!
+    streamingMode				0
+
+MODULE SkipFinalBurst
+
+MODULE CountContainers
+	viewModulo					100
+	text						'a:'
+
+MODULE ScenarioConfiguration
+	numBeams					$precodingBeams    	//1 (on interf), 2 (1 interferer), 7 (1 circle), 19 (2 circles), 37 (3 circles)
+	framingType					1		//0:Use FEC-frames, 1:Use bundles, 2:Use superframes
+	coloring					1		//1: FR1, 4: FR4
+
+MODULE CalculateIdealBeamCenterPositions	
+	numInterferers				$interferingBeams
+
+MODULE CalculateIdealAntennaGain	  
+	beamID						0
+	terminalID					0	
+	userPosition_x				0.3
+	userPosition_y				0.3
+	crossOverLevel_dB			3  		//dB
+	antennaEfficiency			0.6
+	HPBW_deg					1
+	antennaDiameter				0.6
+	TXfrequency_GHz				20
+	antennaPatternType			0 		//0: DVB-S2x model, 1:ITU model
+	
+MODULE CalculateIdealAntennaGain	  
+	beamID						1
+	terminalID					1	
+	userPosition_x				-0.2
+	userPosition_y				0.3
+	crossOverLevel_dB			3  		//dB
+	antennaEfficiency			0.6
+	HPBW_deg					1
+	antennaDiameter				0.6
+	TXfrequency_GHz				20
+	antennaPatternType			0 		//0: DVB-S2x model, 1:ITU model
+	
+MODULE CalculateIdealAntennaGain	 
+	beamID						2
+	terminalID					2	
+	userPosition_x				0.0
+	userPosition_y				-0.4
+	crossOverLevel_dB			3 		//dB
+	antennaEfficiency			0.6
+	HPBW_deg					1
+	antennaDiameter				0.6
+	TXfrequency_GHz				20
+	antennaPatternType			0 		//0: DVB-S2x model, 1:ITU model
+	
+MODULE CalculateIdealAntennaGain	
+	beamID						3 
+	terminalID					3
+	userPosition_x				-0.2		//0.5
+	userPosition_y				0.4		//0.5
+	crossOverLevel_dB			3  		//dB
+	antennaEfficiency			0.6
+	HPBW_deg					1
+	antennaDiameter				0.6
+	TXfrequency_GHz				20
+	antennaPatternType			0 		//0: DVB-S2x model, 1:ITU model	
+	
+MODULE CalculateIdealAntennaGain	
+	beamID						4 
+	terminalID					4
+	userPosition_x				0		//0.5
+	userPosition_y				0.4		//0.5
+	crossOverLevel_dB			3  		//dB
+	antennaEfficiency			0.6
+	HPBW_deg					1
+	antennaDiameter				0.6
+	TXfrequency_GHz				20
+	antennaPatternType			0 		//0: DVB-S2x model, 1:ITU model	
+	
+MODULE ShowAntennaPattern
+
+MODULE SetChannelMatrix	
+	//interference_0_to_1			-12		// in dB
+	//interference_1_to_0			-0.945	// in dB
+	//phaseShift_0				0
+	//phaseShift_1				0
+	constPhaseShift				0  //[deg]
+	applyRandomPhase			0  //0:OFF, 1:ON (apply random phase to all UserTeminals)
+	//DEB_LVL						4
+
+MODULE CalculatePrecodingMatrix
+	mode 						1 	//0:MMSE, 1:ZeroForcing, 2: H_inv
+	Qfactor						10
+
+MODULE PrepareContainerForMultiBeam   // round robin assignment of UID's
+	
+MODULE MapTerminalToBeam	
+	
+MODULE[$precodingBeams] DVB_S2x_CarrierConfig	
+	transponderID				0 
+	carrier_center_frequency_Hz	0
+	baud_rate					100000
+    pls							19	//51, "PSK8_3_5", PSK8_3_5, PSK_8, 3, FRAME_SHORT  // 19, "QPSK_1_2", QPSK_1_2, QPSK, 2, FRAME_SHORT
+	roll_off_factor				0.25
+	power						10
+	WH-pilots                   0    
+	WH-SOSF                     0
+	payloadScramblerID          0
+
+MODULE MultiplyContainerForFramingType   // interleave it as equal as possible in terms of symbols
+
+STATIC_PIPE  					-1
+
+// MODULE CountContainers
+	// viewModulo				1
+	// text						'b:'
+	
+MODULE[$precodingBeams] PacketGenerator 	
+	mode						1
+	pkt_type					4 //0->fixedLength;1->InternetDistributed_1;2->InternetDistributed_2;3->MPEG;4->DVBS2 full Frame;5-> DVBRCS full Burst
+	fixPktLength				4000
+	pkt_content					2 //1
+	randomSeqNr					1
+	useTerminalIDasStreamID		1
+	multiUser					1
+
+MODULE ByteToBit  
+
+MODULE BCHencoder 				
+	skipBCH						0	
+
+MODULE LDPCencoder
+	mode						0//1	// 0: single frame interface,  1: 32 frames interface
+
+MODULE MapperBitToSymbol 		
+	outputMode					11
+
+MODULE[$precodingBeams] ConcatenateBundle		
+
+
+// MODULE ShowBurst				
+	// dataLen						1
+	// locationId					0
+	
+//---------- ORIG Symbols --------------
+	
+MODULE[$precodingBeams] SymbolBasedMeasures		
+	switch						0
+	ScatterPlot_NumPoints		8000		
+
+//--------------------------------------	
+	
+MODULE ApplyPrecodingMatrix   // F
+	enableModule				1   
+	
+PIPELINED	-1
+
+MODULE[$precodingBeams] ApplyPhaseShifts
+	phaseShift_deg					0
+
+// MODULE ShowBurst			
+	// dataLen						1
+	// locationId					1
+	
+MODULE ApplyChannelMatrix    // H
+
+PIPELINED	-1
+
+// MODULE ShowBurst				
+	// dataLen						1
+	// locationId					2
+
+//-------- AFTER Channel and Precoding ----------	
+MODULE[$precodingBeams] SymbolBasedMeasures
+	switch						0
+	ScatterPlot_NumPoints		8000		
+//------------------------------------------------	
+
+
+MODULE[$precodingBeams] MeasureSymbolPower
+
+
+MODULE[$precodingBeams] DVBS2XBundleDecomposer
+
+PIPELINED[$precodingBeams]	-1
+
+MODULE ZeroPadding 
+	oversampling				4 
+	
+MODULE RRCosFilter      
+	symbols_length				20
+	roll_off_factor				0.25
+	oversampling				4
+	sampling_error				0.0 
+	mode						3 // 2=double, 3=float
+	
+MODULE AWGN
+//x1  snr							0 15 1 //[lowerBound] [upperBound] [stepSize]
+	snr							30
+
+MODULE RRCosFilter			    //NOTE: writes length only to containerBodyLength!!
+	symbols_length				20
+	roll_off_factor				0.25
+	oversampling				4
+	sampling_error				0.0 	//000000000000001 
+	mode						3		// 2=double, 3=float		
+
+MODULE CalculatePrecodedChannel	
+	mode						1  //SIR + SNIR
+	
+MODULE ConverterFloatToDouble	
+	
+MODULE RemoveOversampling
+	oversampling				4
+	tx_symbols_length			20
+	rx_symbols_length			20
+
+MODULE[$precodingBeams] SymbolBasedMeasures	
+	switch						0
+	ScatterPlot_NumPoints		8000	
+
+MODULE MapperSymbolToSoftBit
+
+MODULE[$precodingBeams] LDPCPacketcollector	
+PIPELINED[$precodingBeams]	-1
+
+MODULE[$precodingBeams] LDPCdecoder
+	mode                        1 	  	//LDPCDecoderMode: (0:BELIEF_PROPAGATION)(1:MIN_SUM_AVX2_INT8)(2:MIN_SUM_X86_DOUBLE)(3:BP_SOFT_OUT)(4:BP_HARD_OUT)(5:MIN_SUM_SOFT_OUT)(6:AVX_SOFT_FLOAT_OUT)(7:AVX_SOFT_INT8_OUT)(8:AVX_OFFSET_MIN_SUM)(9:AVX_OFFSET_SOFT_FLOAT_OUT)(10:AVX_OFFSET_SOFT_INT8_OUT));
+	maxIterations				50 		//use negative number to avoid early stop  e.g. -20 instead of 20
+    gain                        8
+	
+MODULE[$precodingBeams] LDPCPacketdistributor
+PIPELINED[$precodingBeams]	-1
+
+MODULE BCHdecoder
+	skipBCH 					0
+	
+MODULE BitToByte	
+
+MODULE[$precodingBeams] PacketAnalyzer_TrafficTools
+	pkt_content					2 		//1: single user, 2: multiUser with streamID
+	ignoreSynchLoss				1
+	outputStatistics            0     	//prints statistics
+	PER_simple					0 >> NODAT
+	PER							0 >> NODAT
+	BER							0 >> NODAT
+	NUM_Packets					0 >> NODAT
+	NUM_Error_Packets			0 >> NODAT
+
+MODULE StatisticsReceiver_TrafficTools
+	viewModulo					10
+	autoReset					1
+	forwardHTS_Statistics		1
+	
+MODULE HTS_StatisticsReceiver_TrafficTools	
+	
+END
