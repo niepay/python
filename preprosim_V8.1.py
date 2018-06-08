@@ -39,13 +39,15 @@ if args.file:
     pathOfSimfile = args.file
     #  print("file was %s" % args.file)
 else:
-     # pathOfSimfile = "C:/Users/nip/Documents/projects/hannes/precod02_5beams.sim"  # pathOfSimfile           = "C:/Users/nip/Documents/hannes/hannes.sim"
-     pathOfSimfile = "C:/Users/nip/Documents/projects/hannes/double_module.sim"
+     # pathOfSimfile = "noFileAvailable"
+    pathOfSimfile = "C:/Users/nip/Documents/projects/hannes/precod02_5beams.sim"
+     # pathOfSimfile = "C:/Users/nip/Documents/projects/hannes/double_module.sim"
 #  if args.hvector:
 #      print("help for vector modules")
 #  enter path of simefile for conversion:
 #  pathOfSimfile           = "C:/Users/nip/Documents/hannes/x.sim"
 #  pathOfSimfile           = "C:/Users/nip/Documents/hannes/precod01_FullSet.sim"
+
 #  variable declaration:
 copyVector = False  # for copying vector modules
 vector_module = ""
@@ -82,7 +84,7 @@ for line in content_simFile.split("\n"):
 print("Using following Global Variables:")
 # replace $variables with dedicated value and remove [$...] from module:
 for nameOfDollar, valOfDollar in keyword_DOLLAR.items():
-    print(nameOfDollar,valOfDollar)
+    print(nameOfDollar, valOfDollar)
     content_simFile = content_simFile.replace(nameOfDollar, valOfDollar)
 for line in content_newSIM.split("\n"):
     if line.startswith("//"):
@@ -123,8 +125,6 @@ for line in content_simFile.split("\n"):
 
         copyVector = False
 
-
-
     if not copyVector:
         UID_module = ""
         UID_modules = ""
@@ -133,46 +133,75 @@ for line in content_simFile.split("\n"):
 
             # first line is needed for IF UID insertion:
             first_vector_line = vector_module[:vector_module.find("\n")]
+
+            loop_parameter_values = [None] * (dollarValue + 1)
+
             # vector module doubling loop:
             for i in range(0, dollarValue):
 
                 if "//" not in first_vector_line:
-                    UID_module += "\n" + vector_module.replace(first_vector_line,
+                    UID_module += vector_module.replace(first_vector_line,
                                                                   first_vector_line + "\tIF UID " + str(i))
                 elif "//" in first_vector_line:
                     firstVectorLine_comment = first_vector_line[:first_vector_line.find("//")+2]
-                    UID_module += "\n" + vector_module.replace(firstVectorLine_comment[: -2:],
+                    UID_module += vector_module.replace(firstVectorLine_comment[: -2:],
                                                                   firstVectorLine_comment[: -2:] + "\tIF UID " + str(i))
                     # check for pipelined[] or pipelined in vector module for duplication:
                 if "PIPELINED" in UID_module:
                     vector_module_pipelined = UID_module[UID_module.find("PIPELINED"):]
-                    print(vector_module_pipelined)
+                    #print(vector_module_pipelined)
                     if "[" in vector_module_pipelined:
                         UID_module = UID_module.replace(find_between(vector_module_pipelined, "D", "]"), "")
                         UID_module = UID_module.replace("]", "")
                     elif not i == dollarValue - 1:
                         UID_module = UID_module.replace(vector_module_pipelined, "")
 
-                loop_parameter = "$$"
-                loop_parameter_value =""
+                loop_parameter = "$$$"
+                loop_parameter_value = []
+
                 # replace loop parameter in the vector module according to its UID:
                 # find loop parameter:
                 if "[" in UID_module:
-
+                    # find loop_parameter:
                     for loop_line in UID_module.split("\n"):
                         if "[" in loop_line:
                             loop_line = loop_line.replace("\t\t\t\t\t","]\t\t\t\t\t")
                             loop_parameter = loop_line[loop_line.find("\t") + 1:loop_line.find("[")]
+                    # find UID index for loop parameter and its value:
+                    for loop_line in UID_module.split("\n"):
                         if loop_parameter in loop_line:
-                        # if loop_line[loop_parameter.__len__() + 1] == "\t":
-                            loop_parameter_value = str(re.findall("\d+", loop_line))
-                            loop_parameter_value = find_between(loop_parameter_value, "'", "'")
-                    print("loop parameter:",loop_parameter)
-                    print("loop parameter value:",loop_parameter_value)
-                    # print(UID_module)
-                    print("#################################################")
+                            # for the first occurance of loop_parameter
+                            if not "[" in loop_line:
+                                # find all numbers in line, write them into a list and convert them to int
+                                loop_parameter_value = list(map(int, re.findall("\d+", loop_line)))
+                                loop_parameter_values[-1] = loop_parameter_value[0]
+                            else:
+                                # find all numbers in line, write them into a list and convert them to int
+                                loop_parameter_value = list(map(int, re.findall("\d+", loop_line)))
+                                loop_parameter_values[loop_parameter_value[0]] = loop_parameter_value[1]
 
-                UID_modules += UID_module
+                    for j in range(len(loop_parameter_values)):
+                        if loop_parameter_values[j] == None:
+                            loop_parameter_values[j] = loop_parameter_values[-1]
+
+                    # set loop parameters according to its UID:
+                    # for loop_line in UID_module.split("\n"):
+                    # first_UID_line = find_between(UID_module,"UID","\n")
+                    # first_UID_line = list(map(int, re.findall("\d+", first_UID_line)))
+                    # print(first_UID_line)
+
+                    loop_flag = False
+                    for loop_line in UID_module.split("\n"):
+                        if loop_flag and loop_parameter in loop_line:
+                            UID_module = UID_module.replace(loop_line, "")
+                        if loop_parameter in loop_line:
+                            UID_module = UID_module.replace(loop_line,
+                                                            "\t" + loop_parameter + "\t\t\t\t\t" + str(loop_parameter_values[i]))
+                            loop_flag = True
+
+
+
+                UID_modules += "\n" + UID_module
                 UID_module = ""
 
 
